@@ -1,0 +1,9 @@
+{
+  "name": "Kids Learning App",
+  "short_name": "KidsApp",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#74ebd5",
+  "orientation": "portrait"
+}
