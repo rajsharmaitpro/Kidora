@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">kidora</string>
+    <string name="title_activity_main">kidora</string>
+    <string name="package_name">com.rajsharma.Kidora</string>
+    <string name="custom_url_scheme">com.rajsharma.Kidora</string>
+</resources>
