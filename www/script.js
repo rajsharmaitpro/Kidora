@@ -1,7 +1,7 @@
 // ================= SOUND =================
-const correctSound = new Audio("./assets/correct.mp3");
-const wrongSound = new Audio("./assets/wrong.mp3");
-const winSound = new Audio("./assets/win.mp3");
+const correctSound = new Audio("./assets/sounds/correct.mp3");
+const wrongSound = new Audio("./assets/sounds/wrong.mp3");
+const winSound = new Audio("./assets/sounds/win.mp3");
 
 // ================= VOICE SYNTHESIZER =================
 const synth = window.speechSynthesis;
@@ -195,7 +195,7 @@ function renderHome() {
                 <div class="floating book">📚</div>
                 <div class="floating pencil">✏️</div>
                 <div class="floating star">⭐</div>
-                <img src="assets/kids-school.png" class="hero-image" alt="Kids Learning">
+                <img src="assets/images/kids-school.png" class="hero-image" alt="Kids Learning">
             </div>
         </div>
 
@@ -382,6 +382,8 @@ function startGame(type) {
     currentLang = type.startsWith("hin") ? "hi-IN" : "en-IN";
 
     const diff = DIFF[currentProfile] || DIFF.mid;
+    // Shuffle the full question pool then slice to diff.qCount —
+    // guarantees no repeats within a round AND different questions each visit
     currentSet = _buildSet(type, diff).sort(() => Math.random() - 0.5).slice(0, diff.qCount);
 
     const theme = _themeFor(type);
@@ -758,10 +760,14 @@ function genMatchHin() {
 // ================= MATH DATA =================
 function genCount(diff) {
     diff = diff || DIFF.mid;
-    return Array.from({ length: diff.qCount }, () => {
-        const c = Math.floor(Math.random() * diff.maxNum) + 1;
-        return { visual: "⭐".repeat(c), text: "Count the stars!", answer: String(c) };
-    });
+    // Build pool of every number 1..maxNum, shuffle, slice — no repeats
+    const pool = Array.from({ length: diff.maxNum }, (_, i) => i + 1);
+    const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, diff.qCount);
+    return shuffled.map(c => ({
+        visual: "⭐".repeat(c),
+        text: "Count the stars!",
+        answer: String(c)
+    }));
 }
 
 function genMissingNum(diff) {
@@ -784,12 +790,23 @@ function genMatchNum() {
 
 function genCompare(diff) {
     diff = diff || DIFF.mid;
-    return Array.from({ length: 10 }, () => {
-        let a = Math.floor(Math.random() * diff.compareMax);
-        let b = Math.floor(Math.random() * diff.compareMax);
-        let ans = a > b ? ">" : a < b ? "<" : "=";
-        return { visual: `${a}  ?  ${b}`, text: "Choose the right symbol", answer: ans };
-    });
+    const max = diff.compareMax;
+    // Build pool of all unique pairs (a,b) where a !== b, plus a few equal pairs
+    const pool = [];
+    for (let a = 0; a <= max; a++) {
+        for (let b = 0; b <= max; b++) {
+            if (a !== b) {
+                const ans = a > b ? ">" : "<";
+                pool.push({ visual: `${a}  ?  ${b}`, text: "Choose the right symbol", answer: ans });
+            }
+        }
+    }
+    // Add a handful of equals (a = a)
+    for (let a = 0; a <= max; a++) {
+        pool.push({ visual: `${a}  ?  ${a}`, text: "Choose the right symbol", answer: "=" });
+    }
+    // Shuffle the full pool then slice — guaranteed unique
+    return pool.sort(() => Math.random() - 0.5).slice(0, diff.qCount);
 }
 
 // ================= ACTIVITY: DATA =================
@@ -831,19 +848,22 @@ function genActShapeAnimals() {
 
 // Each round: 1 drag item + 4 drop zone shapes (1 correct, 3 distractors)
 function _buildShapeRounds(all, roundCount) {
-    let rounds = [];
-    for (let i = 0; i < roundCount; i++) {
-        const shuffled = [...all].sort(() => Math.random() - 0.5);
-        const correct = shuffled[0];
-        const zones = shuffled.slice(0, 4).sort(() => Math.random() - 0.5);
-        rounds.push({
+    // Shuffle the full list once so each item appears as "correct" at most once
+    const shuffled = [...all].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, roundCount).map(correct => {
+        // Pick 3 unique distractors from the rest of the list
+        const distractors = all
+            .filter(x => x.id !== correct.id)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 3);
+        const zones = [correct, ...distractors].sort(() => Math.random() - 0.5);
+        return {
             mode: "shape",
             instruction: `Drag the ${correct.id} into the matching shape!`,
             drag: [correct],
             zones: zones.map(z => ({ ...z, isTarget: z.id === correct.id }))
-        });
-    }
-    return rounds;
+        };
+    });
 }
 
 function genActSize() {
@@ -891,52 +911,50 @@ function genActColor() {
 }
 
 function genActCounting() {
-    let rounds = [];
-    for (let i = 0; i < 6; i++) {
-        const target = Math.floor(Math.random() * 4) + 2; // 2-5
-        rounds.push({
-            mode: "counting",
-            instruction: `Drag ${target} stars into the basket!`,
-            target,
-            dragPoolSize: 6,
-            zones: [{ id: "basket", emoji: "🧺", label: "Basket" }]
-        });
-    }
-    return rounds;
+    // Targets 2-5 (4 unique values), shuffle so no repeats across 4 rounds
+    const targets = [2, 3, 4, 5].sort(() => Math.random() - 0.5);
+    return targets.map(target => ({
+        mode: "counting",
+        instruction: `Drag ${target} stars into the basket!`,
+        target,
+        dragPoolSize: 6,
+        zones: [{ id: "basket", emoji: "🧺", label: "Basket" }]
+    }));
 }
 
 function genActLetterEng() {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    let rounds = [];
-    for (let i = 0; i < 8; i++) {
-        const shuffled = [...letters].sort(() => Math.random() - 0.5);
-        const correct = shuffled[0];
-        const zones = shuffled.slice(0, 4).sort(() => Math.random() - 0.5);
-        rounds.push({
+    // Shuffle once, pick 8 unique letters — no repeats
+    const picked = [...letters].sort(() => Math.random() - 0.5).slice(0, 8);
+    return picked.map(correct => {
+        // Build 3 unique wrong options from remaining letters
+        const wrong = letters.filter(l => l !== correct)
+            .sort(() => Math.random() - 0.5).slice(0, 3);
+        const zones = [correct, ...wrong].sort(() => Math.random() - 0.5);
+        return {
             mode: "shape",
             instruction: `Drag the letter ${correct} into the matching outline!`,
             drag: [{ id: correct, emoji: correct }],
             zones: zones.map(z => ({ id: z, emoji: z, isTarget: z === correct }))
-        });
-    }
-    return rounds;
+        };
+    });
 }
 
 function genActLetterHin() {
     const letters = ["क", "ख", "ग", "घ", "च", "छ", "ज", "झ", "ट", "ठ", "प", "फ", "ब", "भ", "म", "य", "र", "ल", "व", "स", "ह"];
-    let rounds = [];
-    for (let i = 0; i < 8; i++) {
-        const shuffled = [...letters].sort(() => Math.random() - 0.5);
-        const correct = shuffled[0];
-        const zones = shuffled.slice(0, 4).sort(() => Math.random() - 0.5);
-        rounds.push({
+    // Shuffle once, pick 8 unique letters — no repeats
+    const picked = [...letters].sort(() => Math.random() - 0.5).slice(0, 8);
+    return picked.map(correct => {
+        const wrong = letters.filter(l => l !== correct)
+            .sort(() => Math.random() - 0.5).slice(0, 3);
+        const zones = [correct, ...wrong].sort(() => Math.random() - 0.5);
+        return {
             mode: "shape",
             instruction: `अक्षर ${correct} को सही जगह खींचें!`,
             drag: [{ id: correct, emoji: correct }],
             zones: zones.map(z => ({ id: z, emoji: z, isTarget: z === correct }))
-        });
-    }
-    return rounds;
+        };
+    });
 }
 
 function genActCategorySort() {

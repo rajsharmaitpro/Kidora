@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <clipPath id="roundedSquare">
+      <rect width="512" height="512" rx="108"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="108" fill="#5b36ff"/>
+  <rect x="14" y="14" width="484" height="484" rx="96" fill="#6b46ff" opacity="0.4"/>
+
+  <!-- Sparkles -->
+  <circle cx="80" cy="80" r="7" fill="#ffe36c" opacity="0.9"/>
+  <circle cx="432" cy="90" r="6" fill="#ffe36c" opacity="0.7"/>
+  <circle cx="70" cy="420" r="5" fill="#fff" opacity="0.6"/>
+  <circle cx="440" cy="410" r="7" fill="#ffe36c" opacity="0.8"/>
+  <circle cx="450" cy="65" r="4" fill="#fff" opacity="0.5"/>
+
+  <!-- Wings -->
+  <ellipse cx="128" cy="330" rx="62" ry="90" fill="#e8e0ff" transform="rotate(-15 128 330)"/>
+  <ellipse cx="384" cy="330" rx="62" ry="90" fill="#e8e0ff" transform="rotate(15 384 330)"/>
+  <!-- Wing feathers left -->
+  <path d="M105 295 Q125 318 110 350" fill="none" stroke="#c4b8ff" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M120 302 Q142 328 124 360" fill="none" stroke="#c4b8ff" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Wing feathers right -->
+  <path d="M407 295 Q387 318 402 350" fill="none" stroke="#c4b8ff" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M392 302 Q370 328 388 360" fill="none" stroke="#c4b8ff" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Body -->
+  <ellipse cx="256" cy="318" rx="130" ry="138" fill="#fff"/>
+  <!-- Belly -->
+  <ellipse cx="256" cy="345" rx="80" ry="90" fill="#fff8e8"/>
+  <ellipse cx="256" cy="335" rx="42" ry="24" fill="#ffefd0" opacity="0.6"/>
+  <ellipse cx="256" cy="362" rx="38" ry="22" fill="#ffefd0" opacity="0.5"/>
+  <ellipse cx="256" cy="388" rx="33" ry="18" fill="#ffefd0" opacity="0.4"/>
+
+  <!-- Head -->
+  <ellipse cx="256" cy="220" rx="112" ry="106" fill="#fff"/>
+  <!-- Ear tufts -->
+  <polygon points="188,152 203,108 218,152" fill="#fff"/>
+  <polygon points="294,152 309,108 324,152" fill="#fff"/>
+  <polygon points="192,148 203,114 214,148" fill="#e8e0ff"/>
+  <polygon points="298,148 309,114 320,148" fill="#e8e0ff"/>
+
+  <!-- Eyes -->
+  <circle cx="224" cy="222" r="38" fill="#5b36ff"/>
+  <circle cx="288" cy="222" r="38" fill="#5b36ff"/>
+  <circle cx="224" cy="222" r="28" fill="#fff"/>
+  <circle cx="288" cy="222" r="28" fill="#fff"/>
+  <circle cx="224" cy="222" r="19" fill="#1a0066"/>
+  <circle cx="288" cy="222" r="19" fill="#1a0066"/>
+  <!-- Eye shines -->
+  <circle cx="214" cy="210" r="7" fill="#fff"/>
+  <circle cx="233" cy="228" r="3.5" fill="#fff" opacity="0.6"/>
+  <circle cx="278" cy="210" r="7" fill="#fff"/>
+  <circle cx="297" cy="228" r="3.5" fill="#fff" opacity="0.6"/>
+
+  <!-- Eyebrows -->
+  <path d="M198 196 Q224 183 250 196" fill="none" stroke="#5b36ff" stroke-width="5" stroke-linecap="round"/>
+  <path d="M262 196 Q288 183 314 196" fill="none" stroke="#5b36ff" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Beak -->
+  <polygon points="256,244 242,266 270,266" fill="#ffb800"/>
+  <polygon points="256,249 243,263 269,263" fill="#ff9800" opacity="0.55"/>
+
+  <!-- Blush -->
+  <ellipse cx="196" cy="248" rx="20" ry="13" fill="#ffb3c6" opacity="0.55"/>
+  <ellipse cx="316" cy="248" rx="20" ry="13" fill="#ffb3c6" opacity="0.55"/>
+
+  <!-- Graduation cap -->
+  <rect x="154" y="136" width="204" height="20" rx="6" fill="#1a0066"/>
+  <rect x="180" y="112" width="152" height="28" rx="6" fill="#1a0066"/>
+  <!-- Tassel -->
+  <line x1="358" y1="145" x2="380" y2="182" stroke="#ffe36c" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="380" cy="185" r="7" fill="#ffe36c"/>
+  <line x1="380" y1="192" x2="374" y2="210" stroke="#ffe36c" stroke-width="3" stroke-linecap="round"/>
+  <line x1="380" y1="192" x2="380" y2="212" stroke="#ffe36c" stroke-width="3" stroke-linecap="round"/>
+  <line x1="380" y1="192" x2="386" y2="210" stroke="#ffe36c" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Pencil -->
+  <g transform="rotate(35 400 360)">
+    <rect x="384" y="328" width="16" height="76" rx="3" fill="#ffe36c"/>
+    <polygon points="384,404 400,404 392,428" fill="#ffb800"/>
+    <rect x="384" y="328" width="16" height="11" rx="3" fill="#e0e0e0"/>
+    <rect x="385" y="329" width="14" height="9" rx="2" fill="#bdbdbd"/>
+    <polygon points="387,426 397,426 392,438" fill="#444"/>
+  </g>
+
+  <!-- K badge -->
+  <circle cx="338" cy="378" r="30" fill="#ffe36c"/>
+  <text x="338" y="387" text-anchor="middle" font-family="Arial Rounded MT Bold, Arial, sans-serif" font-weight="900" font-size="30" fill="#5b36ff">K</text>
+
+  <!-- Feet -->
+  <ellipse cx="228" cy="448" rx="26" ry="11" fill="#ffb800" transform="rotate(-12 228 448)"/>
+  <ellipse cx="284" cy="448" rx="26" ry="11" fill="#ffb800" transform="rotate(12 284 448)"/>
+  <line x1="208" y1="452" x2="200" y2="464" stroke="#ff9800" stroke-width="4" stroke-linecap="round"/>
+  <line x1="220" y1="456" x2="216" y2="468" stroke="#ff9800" stroke-width="4" stroke-linecap="round"/>
+  <line x1="232" y1="456" x2="232" y2="469" stroke="#ff9800" stroke-width="4" stroke-linecap="round"/>
+  <line x1="268" y1="456" x2="268" y2="469" stroke="#ff9800" stroke-width="4" stroke-linecap="round"/>
+  <line x1="280" y1="456" x2="284" y2="468" stroke="#ff9800" stroke-width="4" stroke-linecap="round"/>
+  <line x1="292" y1="452" x2="300" y2="464" stroke="#ff9800" stroke-width="4" stroke-linecap="round"/>
+</svg>
