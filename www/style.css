@@ -1650,3 +1650,51 @@ body {
     color: #aaa;
     letter-spacing: 0.3px;
 }
+
+/* ========== Revive Card (Lightning Mode rewarded ad) ========== */
+.revive-card {
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border: 2px solid #ffe082;
+    border-radius: 20px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    text-align: center;
+    animation: fadeSlideUp 0.5s ease both;
+    animation-delay: 0.7s;
+}
+
+.revive-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e65c00;
+    margin-bottom: 4px;
+}
+
+.revive-sub {
+    font-size: 0.82rem;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.revive-btn {
+    background: linear-gradient(135deg, #ff9800 0%, #e65c00 100%);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(230, 92, 0, 0.3);
+    transition: transform .2s, box-shadow .2s;
+}
+
+.revive-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(230, 92, 0, 0.4);
+}
+
+.revive-btn:active {
+    transform: scale(0.96);
+}

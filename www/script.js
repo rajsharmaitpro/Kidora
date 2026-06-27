@@ -1,3 +1,198 @@
+// ================= ADMOB CONFIGURATION =================
+const ADMOB_CONFIG = {
+    appId: "ca-app-pub-8245672543832838~4494375829",
+    bannerId: "ca-app-pub-8245672543832838/5304894616",
+    interstitialId: "ca-app-pub-8245672543832838/4339297300",
+    rewardedId: "ca-app-pub-8245672543832838/3764582239",
+    // ---- SET TO false BEFORE PUBLISHING TO PLAY STORE ----
+    testMode: true
+};
+
+// Test Ad IDs (Google official test IDs — safe during development)
+const ADMOB_TEST_IDS = {
+    bannerId: "ca-app-pub-3940256099942544/6300978111",
+    interstitialId: "ca-app-pub-3940256099942544/1033173712",
+    rewardedId: "ca-app-pub-3940256099942544/5224354917"
+};
+
+// Returns correct ID based on test mode
+function adId(type) {
+    return ADMOB_CONFIG.testMode ? ADMOB_TEST_IDS[type] : ADMOB_CONFIG[type];
+}
+
+// Detect if running inside Capacitor native app (not browser)
+const IS_NATIVE = !!(typeof window.Capacitor !== "undefined" &&
+    window.Capacitor.isNativePlatform &&
+    window.Capacitor.isNativePlatform());
+
+// Track interstitial frequency (show every 3rd game launch)
+let gamelaunchCount = loadAdData("kg_launch_count", 0);
+let rewardedAdAvailable = false;
+let interstitialAdAvailable = false;
+let adInitialized = false;
+
+// ONE revive per Lightning Mode session — reset on each new game
+let hasUsedRevive = false;
+
+function loadAdData(key, def) {
+    try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : def; } catch (e) { return def; }
+}
+function saveAdData(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { }
+}
+
+// Initialize AdMob — called once on app start
+async function initAdMob() {
+    // Only run inside Capacitor native app
+    if (!IS_NATIVE) {
+        console.log("AdMob: browser/web mode — ads disabled");
+        return;
+    }
+    if (typeof CapacitorAdmob === "undefined" && !(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AdMob)) {
+        console.log("AdMob plugin not installed");
+        return;
+    }
+    try {
+        const { AdMob } = window.Capacitor.Plugins;
+
+        await AdMob.initialize({
+            requestTrackingAuthorization: false,
+            tagForChildDirectedTreatment: true,
+            tagForUnderAgeOfConsent: true,
+            testingDevices: ADMOB_CONFIG.testMode ? ["EMULATOR"] : []
+        });
+
+        adInitialized = true;
+        console.log(`AdMob initialized ✓ (${ADMOB_CONFIG.testMode ? "TEST MODE" : "LIVE MODE"})`);
+
+        await preloadInterstitial();
+        await preloadRewarded();
+
+    } catch (e) {
+        console.log("AdMob init error:", e);
+    }
+}
+
+// Pre-load interstitial ad
+async function preloadInterstitial() {
+    if (!adInitialized) return;
+    try {
+        const { AdMob } = window.Capacitor.Plugins;
+        await AdMob.prepareInterstitial({ adId: adId("interstitialId") });
+        interstitialAdAvailable = true;
+
+        AdMob.addListener("interstitialAdDismissed", () => {
+            interstitialAdAvailable = false;
+            setTimeout(preloadInterstitial, 1000); // pre-load next
+        });
+        AdMob.addListener("interstitialAdFailedToLoad", () => {
+            interstitialAdAvailable = false;
+        });
+    } catch (e) {
+        console.log("Interstitial preload error:", e);
+    }
+}
+
+// Pre-load rewarded ad
+async function preloadRewarded() {
+    if (!adInitialized) return;
+    try {
+        const { AdMob } = window.Capacitor.Plugins;
+        await AdMob.prepareRewardVideoAd({ adId: adId("rewardedId") });
+        rewardedAdAvailable = true;
+
+        AdMob.addListener("onRewardedVideoAdRewarded", () => {
+            // User watched full ad — give them the revive
+            reviveGame();
+        });
+        AdMob.addListener("rewardedVideoAdDismissed", () => {
+            rewardedAdAvailable = false;
+            setTimeout(preloadRewarded, 1000); // pre-load next
+        });
+        AdMob.addListener("rewardedVideoAdFailedToLoad", () => {
+            rewardedAdAvailable = false;
+        });
+    } catch (e) {
+        console.log("Rewarded preload error:", e);
+    }
+}
+
+// Show banner ad
+async function showBannerAd() {
+    if (!adInitialized || !IS_NATIVE) return;
+    try {
+        const { AdMob } = window.Capacitor.Plugins;
+        await AdMob.showBanner({
+            adId: adId("bannerId"),
+            adSize: "SMART_BANNER",
+            position: "BOTTOM_CENTER",
+            margin: 0
+        });
+    } catch (e) {
+        console.log("Banner error:", e);
+    }
+}
+
+// Hide banner ad
+async function hideBannerAd() {
+    if (!adInitialized || !IS_NATIVE) return;
+    try {
+        const { AdMob } = window.Capacitor.Plugins;
+        await AdMob.hideBanner();
+    } catch (e) { }
+}
+
+// Show interstitial ad (every 3rd game launch)
+async function maybeShowInterstitial() {
+    gamelaunchCount++;
+    saveAdData("kg_launch_count", gamelaunchCount);
+
+    if (gamelaunchCount % 3 !== 0) return;
+    if (!adInitialized || !interstitialAdAvailable || !IS_NATIVE) return;
+
+    try {
+        const { AdMob } = window.Capacitor.Plugins;
+        await AdMob.showInterstitial();
+    } catch (e) {
+        console.log("Interstitial show error:", e);
+    }
+}
+
+// Show rewarded ad (Lightning Mode revive — ONE per session)
+async function showRewardedAd() {
+    // Only one revive allowed per Lightning Mode session
+    if (hasUsedRevive) {
+        speak("No more revives this round! Try again!");
+        return;
+    }
+
+    // Web/browser — no ads available, just revive free
+    if (!IS_NATIVE || !adInitialized || !rewardedAdAvailable) {
+        hasUsedRevive = true;
+        reviveGame();
+        return;
+    }
+
+    try {
+        const { AdMob } = window.Capacitor.Plugins;
+        hasUsedRevive = true; // mark used before showing (prevents double tap)
+        await AdMob.showRewardVideoAd();
+        // Actual revive triggered by onRewardedVideoAdRewarded listener
+    } catch (e) {
+        console.log("Rewarded show error:", e);
+        reviveGame(); // fallback on error
+    }
+}
+
+// Revive player after watching rewarded ad
+function reviveGame() {
+    speak("Great job! You get another chance!");
+    document.getElementById("visual").style.display = "";
+    isSuddenDeath = true;
+    showBannerAd(); // restore banner
+    show(); // resume game from same question
+}
+
 // ================= SOUND =================
 const correctSound = new Audio("./assets/sounds/correct.mp3");
 const wrongSound = new Audio("./assets/sounds/wrong.mp3");
@@ -396,6 +591,7 @@ function startSuddenDeath(type) {
     isSuddenDeath = true;
     isDailyChallenge = false;
     suddenDeathStreak = 0;
+    hasUsedRevive = false; // reset revive for new session
     currentLang = type.startsWith("hin") ? "hi-IN" : "en-IN";
 
     const diff = DIFF[currentProfile] || DIFF.mid;
@@ -456,6 +652,13 @@ function _launchGame(type, theme) {
     if (sdBar) sdBar.style.display = isSuddenDeath ? "flex" : "none";
 
     showScreen("game");
+
+    // Show interstitial every 3rd game launch
+    maybeShowInterstitial();
+
+    // Show banner at bottom of game screen
+    showBannerAd();
+
     show();
 }
 
@@ -1507,6 +1710,13 @@ function showLightningOver() {
     document.getElementById("visual").style.display = "none";
     document.getElementById("options").innerHTML = "";
     speak(`Game over! You answered ${suddenDeathStreak} in a row!`);
+
+    // Hide banner during game over screen
+    hideBannerAd();
+
+    // Can user revive? Only on native, only once per session
+    const canRevive = IS_NATIVE && !hasUsedRevive;
+
     document.getElementById("question").innerHTML = `
         <div class="win-screen">
             <span class="win-trophy">⚡</span>
@@ -1524,10 +1734,26 @@ function showLightningOver() {
                     <span class="badge-value">${best}</span>
                 </div>
             </div>
+
+            ${canRevive ? `
+            <!-- First wrong answer: show ONLY revive + home, no Try Again -->
+            <div class="revive-card">
+                <div class="revive-title">💫 Get One More Chance!</div>
+                <div class="revive-sub">Watch a short video to continue your streak</div>
+                <button class="revive-btn" onclick="showRewardedAd()">
+                    ▶ Watch Ad &amp; Revive
+                </button>
+            </div>
+            <div class="win-actions">
+                <button class="win-btn-home" onclick="goHome()">🏠 Home</button>
+            </div>
+            ` : `
+            <!-- Revive already used OR web: show Try Again + Home -->
             <div class="win-actions">
                 <button class="win-btn-play" onclick="startSuddenDeath('${window._lastGameType}')">⚡ Try Again</button>
                 <button class="win-btn-home" onclick="goHome()">🏠 Home</button>
             </div>
+            `}
         </div>`;
 }
 
@@ -1535,6 +1761,9 @@ function showLightningOver() {
 function showWin(isDaily, newStreak) {
     const stars = calcStars(score, currentSet.length);
     saveStars(window._lastGameType, stars);
+
+    // Hide banner during win screen (cleaner UX)
+    hideBannerAd();
 
     const confettiEmojis = ["⭐", "🎉", "✨", "🌟", "🎊", "💫", "🏅", "🎈"];
     const confettiHTML = Array.from({ length: 12 }, (_, i) => {
@@ -1588,6 +1817,7 @@ function levelCheck() {
 // ================= GO BACK TO CATEGORY =================
 function goBackToCategory() {
     synth && synth.cancel();
+    hideBannerAd();
     currentSet = []; currentQ = null;
     index = 0; score = 0;
     isSuddenDeath = false; isDailyChallenge = false;
@@ -1609,6 +1839,7 @@ function goBackToCategory() {
 // ================= GO HOME =================
 function goHome() {
     synth && synth.cancel();
+    hideBannerAd();
     currentSet = []; currentQ = null;
     index = 0; score = 0;
     isSuddenDeath = false; isDailyChallenge = false;
@@ -1627,6 +1858,9 @@ function goHome() {
 
 // ================= INIT =================
 function initApp() {
+    // Initialize AdMob first (non-blocking)
+    initAdMob();
+
     const splash = document.getElementById("splash-overlay");
     if (splash) {
         // Wait 2.8s so all animations play, then fade out over 0.6s
@@ -1635,8 +1869,8 @@ function initApp() {
             setTimeout(function () {
                 splash.style.display = "none";
                 renderHome();
-            }, 550);
-        }, 5000);
+            }, 650);
+        }, 2800);
     } else {
         renderHome();
     }

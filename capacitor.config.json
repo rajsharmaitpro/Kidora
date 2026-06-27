@@ -5,8 +5,14 @@
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0,
-      "launchAutoHide": false,
+      "launchAutoHide": true,
       "backgroundColor": "#5b36ff"
+    },
+    "AdMob": {
+      "appId": "ca-app-pub-8245672543832838~4494375829",
+      "tagForChildDirectedTreatment": true,
+      "tagForUnderAgeOfConsent": true,
+      "testingDevices": []
     }
   }
 }
