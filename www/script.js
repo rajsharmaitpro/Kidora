@@ -188,7 +188,7 @@ function renderHome() {
 
     const html = `
         <div class="hero-section">
-            <div class="logo-badge">⭐ Kidora</div>
+            <div class="logo-badge">🦉 Kidora</div>
             <h1 class="hero-title">Learn, Play & Grow!</h1>
             <p class="hero-subtitle">Fun Learning Activities For Bright Young Minds</p>
             <div class="hero-scene">
@@ -1625,7 +1625,19 @@ function goHome() {
 
 // ================= INIT =================
 function initApp() {
-    renderHome();
+    const splash = document.getElementById("splash-overlay");
+    if (splash) {
+        // Show splash for 2.5 seconds then fade out
+        setTimeout(() => {
+            splash.style.opacity = "0";
+            setTimeout(() => {
+                splash.remove();
+                renderHome();
+            }, 600);
+        }, 2500);
+    } else {
+        renderHome();
+    }
 }
 
 if (document.readyState === "loading") {
