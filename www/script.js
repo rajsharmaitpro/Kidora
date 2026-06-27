@@ -1869,8 +1869,8 @@ function initApp() {
             setTimeout(function () {
                 splash.style.display = "none";
                 renderHome();
-            }, 650);
-        }, 2800);
+            }, 550);
+        }, 4500);
     } else {
         renderHome();
     }
