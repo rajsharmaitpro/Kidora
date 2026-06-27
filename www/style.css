@@ -1640,3 +1640,13 @@ body {
         padding: 8px 14px;
     }
 }
+
+/* ========== Home Tagline ========== */
+.home-tagline {
+    text-align: center;
+    margin-top: 20px;
+    padding-bottom: 8px;
+    font-size: 0.88rem;
+    color: #aaa;
+    letter-spacing: 0.3px;
+}

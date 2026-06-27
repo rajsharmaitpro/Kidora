@@ -215,7 +215,9 @@ function renderHome() {
                 `).join("")}
             </div>
             ${hasProfile ? `<button class="avatar-continue-btn" onclick="renderSubjects()">${avatar.emoji} Continue as ${avatar.name} →</button>` : ""}
-        </div>`;
+        </div>
+
+        <div class="home-tagline">Made with ❤️ for little learners</div>`;
 
     document.getElementById("home").innerHTML = html;
     showScreen("home");
@@ -1627,14 +1629,14 @@ function goHome() {
 function initApp() {
     const splash = document.getElementById("splash-overlay");
     if (splash) {
-        // Show splash for 2.5 seconds then fade out
-        setTimeout(() => {
+        // Wait 2.8s so all animations play, then fade out over 0.6s
+        setTimeout(function () {
             splash.style.opacity = "0";
-            setTimeout(() => {
-                splash.remove();
+            setTimeout(function () {
+                splash.style.display = "none";
                 renderHome();
-            }, 600);
-        }, 2500);
+            }, 650);
+        }, 2800);
     } else {
         renderHome();
     }

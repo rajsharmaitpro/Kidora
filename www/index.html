@@ -9,8 +9,8 @@
 
     <!-- Favicon -->
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
-    <link rel="icon" href="assets/images/kidora-icons/favicon-32px.png" sizes="32x32" type="image/png">
-    <link rel="apple-touch-icon" href="assets/images/kidora-icons/favicon-180px.png">
+    <link rel="icon" href="assets/images/favicon-32px.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/favicon-180px.png">
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JB2B3XPD89"></script>
@@ -22,7 +22,7 @@
         gtag('config', 'G-JB2B3XPD89');
     </script>
 
-    <title>Kidora</title>
+    <title>🦉 Kidora</title>
 
     <meta name="theme-color" content="#5b36ff">
 
@@ -35,45 +35,538 @@
 </head>
 
 <body>
-    <div id="splash-overlay" style="
-  position:fixed; inset:0; z-index:9999;
-  background:#5b36ff;
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  transition: opacity 0.6s ease;
-">
-        <div style="
-    width:140px; height:140px;
-    background:rgba(255,255,255,0.15);
-    border-radius:32px;
-    display:flex; align-items:center; justify-content:center;
-    animation: kidoraPulse 2s ease-in-out infinite;
-    box-shadow: 0 0 0 0 rgba(255,255,255,0.2);
-  ">
-            <img src="assets/images/icon-playstore-512px.png" style="width:110px;height:110px;object-fit:contain" alt="Kidora">
+
+    <!-- ===== ANIMATED SPLASH SCREEN ===== -->
+    <div id="splash-overlay">
+
+        <!-- floating circles background -->
+        <div class="sp-bubble sp-b1"></div>
+        <div class="sp-bubble sp-b2"></div>
+        <div class="sp-bubble sp-b3"></div>
+        <div class="sp-bubble sp-b4"></div>
+        <div class="sp-bubble sp-b5"></div>
+
+        <!-- sparkle stars -->
+        <div class="sp-star sp-s1">⭐</div>
+        <div class="sp-star sp-s2">✨</div>
+        <div class="sp-star sp-s3">⭐</div>
+        <div class="sp-star sp-s4">✨</div>
+        <div class="sp-star sp-s5">⭐</div>
+        <div class="sp-star sp-s6">✨</div>
+        <!-- icon -->
+        <div class="sp-icon-ring">
+            <div class="sp-icon-wrap">
+                <img src="assets/images/icon-playstore-512px.png" class="sp-icon-img" alt="Kidora">
+            </div>
         </div>
-        <div style="margin-top:24px;font-family:'Fredoka',sans-serif;
-    font-size:2.8rem;font-weight:700;color:#fff;letter-spacing:2px">
-            Kidora
+
+        <!-- orbiting pencil line -->
+        <div class="sp-orbit-wrap sp-orbit-1">
+            <div class="sp-orbit-dot sp-orbit-pencil">✏️</div>
         </div>
-        <div style="margin-top:8px;color:rgba(255,255,255,0.7);
-    letter-spacing:3px;font-size:0.85rem;text-transform:uppercase">
-            Learn · Play · Grow
+        <div class="sp-orbit-wrap sp-orbit-2">
+            <div class="sp-orbit-dot sp-orbit-star2">⭐</div>
         </div>
+
+        <!-- name + tagline -->
+        <div class="sp-name">Kidora</div>
+        <div class="sp-tagline">LEARN &nbsp;·&nbsp; PLAY &nbsp;·&nbsp; GROW</div>
+
+        <!-- loading dots -->
+        <div class="sp-dots">
+            <div class="sp-dot sp-dot1"></div>
+            <div class="sp-dot sp-dot2"></div>
+            <div class="sp-dot sp-dot3"></div>
+        </div>
+
     </div>
+
     <style>
-        @keyframes kidoraPulse {
+        /* ===== SPLASH STYLES ===== */
+        #splash-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #5b36ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: opacity 0.6s ease;
+        }
+
+        /* background floating circles */
+        .sp-bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.07);
+            -webkit-animation: spFloat 6s ease-in-out infinite;
+            animation: spFloat 6s ease-in-out infinite;
+        }
+
+        .sp-b1 {
+            width: 130px;
+            height: 130px;
+            left: 4%;
+            top: 60%;
+            -webkit-animation-delay: 0s;
+            animation-delay: 0s;
+        }
+
+        .sp-b2 {
+            width: 90px;
+            height: 90px;
+            left: 78%;
+            top: 55%;
+            -webkit-animation-delay: 1s;
+            animation-delay: 1s;
+        }
+
+        .sp-b3 {
+            width: 200px;
+            height: 200px;
+            left: -6%;
+            top: -8%;
+            -webkit-animation-delay: 2s;
+            animation-delay: 2s;
+        }
+
+        .sp-b4 {
+            width: 65px;
+            height: 65px;
+            left: 83%;
+            top: 8%;
+            -webkit-animation-delay: 0.5s;
+            animation-delay: 0.5s;
+        }
+
+        .sp-b5 {
+            width: 50px;
+            height: 50px;
+            left: 22%;
+            top: 10%;
+            -webkit-animation-delay: 3s;
+            animation-delay: 3s;
+        }
+
+        @-webkit-keyframes spFloat {
 
             0%,
             100% {
-                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3);
+                -webkit-transform: translateY(0) scale(1);
+                opacity: 0.5;
             }
 
             50% {
-                box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+                -webkit-transform: translateY(-24px) scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: translateY(-24px) scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        /* CSS star shapes */
+        .sp-star {
+            position: absolute;
+            font-size: 1.3rem;
+            -webkit-animation: spSparkle 3s ease-in-out infinite;
+            animation: spSparkle 3s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        .sp-s1 {
+            top: 14%;
+            left: 10%;
+            width: 16px;
+            height: 16px;
+            -webkit-animation-delay: 0s;
+            animation-delay: 0s;
+        }
+
+        .sp-s2 {
+            top: 18%;
+            left: 80%;
+            width: 12px;
+            height: 12px;
+            -webkit-animation-delay: 0.8s;
+            animation-delay: 0.8s;
+        }
+
+        .sp-s3 {
+            top: 72%;
+            left: 8%;
+            width: 18px;
+            height: 18px;
+            -webkit-animation-delay: 1.6s;
+            animation-delay: 1.6s;
+        }
+
+        .sp-s4 {
+            top: 76%;
+            left: 76%;
+            width: 14px;
+            height: 14px;
+            -webkit-animation-delay: 2.4s;
+            animation-delay: 2.4s;
+        }
+
+        .sp-s5 {
+            top: 8%;
+            left: 52%;
+            width: 10px;
+            height: 10px;
+            -webkit-animation-delay: 0.4s;
+            animation-delay: 0.4s;
+        }
+
+        .sp-s6 {
+            top: 50%;
+            left: 92%;
+            width: 16px;
+            height: 16px;
+            -webkit-animation-delay: 1.2s;
+            animation-delay: 1.2s;
+        }
+
+        @-webkit-keyframes spSparkle {
+
+            0%,
+            100% {
+                opacity: 0;
+                -webkit-transform: scale(0.4) rotate(0deg);
+            }
+
+            50% {
+                opacity: 1;
+                -webkit-transform: scale(1.2) rotate(30deg);
+            }
+        }
+
+        @keyframes spSparkle {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: scale(0.4) rotate(0deg);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2) rotate(30deg);
+            }
+        }
+
+        /* icon pulsing ring */
+        .sp-icon-ring {
+            -webkit-animation: spEntry 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both, spPulse 2.5s ease-in-out infinite;
+            animation: spEntry 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both, spPulse 2.5s ease-in-out infinite;
+            -webkit-animation-delay: 0.2s, 1.2s;
+            animation-delay: 0.2s, 1.2s;
+        }
+
+        @-webkit-keyframes spEntry {
+            0% {
+                -webkit-transform: scale(0) rotate(-15deg);
+                opacity: 0;
+            }
+
+            60% {
+                -webkit-transform: scale(1.1) rotate(4deg);
+                opacity: 1;
+            }
+
+            80% {
+                -webkit-transform: scale(0.96) rotate(-2deg);
+            }
+
+            100% {
+                -webkit-transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spEntry {
+            0% {
+                transform: scale(0) rotate(-15deg);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.1) rotate(4deg);
+                opacity: 1;
+            }
+
+            80% {
+                transform: scale(0.96) rotate(-2deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        @-webkit-keyframes spPulse {
+
+            0%,
+            100% {
+                -webkit-transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3), 0 0 0 0 rgba(255, 255, 255, 0.1);
+            }
+
+            50% {
+                -webkit-transform: scale(1.03);
+                box-shadow: 0 0 0 14px rgba(255, 255, 255, 0), 0 0 0 28px rgba(255, 255, 255, 0);
+            }
+        }
+
+        @keyframes spPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3), 0 0 0 0 rgba(255, 255, 255, 0.1);
+            }
+
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 0 0 14px rgba(255, 255, 255, 0), 0 0 0 28px rgba(255, 255, 255, 0);
+            }
+        }
+
+        .sp-icon-wrap {
+            width: 140px;
+            height: 140px;
+            background: rgba(255, 255, 255, 0.14);
+            border-radius: 34px;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+        }
+
+        .sp-icon-img {
+            width: 108px;
+            height: 108px;
+            object-fit: contain;
+        }
+
+        /* orbiting dots */
+        .sp-orbit-wrap {
+            position: absolute;
+            width: 210px;
+            height: 210px;
+            top: 50%;
+            left: 50%;
+            margin-top: -105px;
+            margin-left: -105px;
+            -webkit-animation: spOrbit 5s linear infinite;
+            animation: spOrbit 5s linear infinite;
+            opacity: 0;
+            -webkit-animation-delay: 1s;
+            animation-delay: 1s;
+        }
+
+        .sp-orbit-2 {
+            -webkit-animation-delay: 3.5s;
+            animation-delay: 3.5s;
+            -webkit-animation-duration: 5s;
+            animation-duration: 5s;
+        }
+
+        @-webkit-keyframes spOrbit {
+            0% {
+                -webkit-transform: rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes spOrbit {
+            0% {
+                transform: rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .sp-orbit-dot {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            margin-left: -10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 1.6rem;
+        }
+
+        .sp-orbit-pencil {
+            width: 8px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .sp-orbit-star2 {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* app name */
+        .sp-name {
+            margin-top: 28px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            -webkit-animation: spSlideUp 0.6s ease both;
+            animation: spSlideUp 0.6s ease both;
+            -webkit-animation-delay: 0.8s;
+            animation-delay: 0.8s;
+            opacity: 0;
+        }
+
+        .sp-tagline {
+            margin-top: 8px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 3px;
+            -webkit-animation: spSlideUp 0.6s ease both;
+            animation: spSlideUp 0.6s ease both;
+            -webkit-animation-delay: 1s;
+            animation-delay: 1s;
+            opacity: 0;
+        }
+
+        @-webkit-keyframes spSlideUp {
+            0% {
+                opacity: 0;
+                -webkit-transform: translateY(18px);
+            }
+
+            100% {
+                opacity: 1;
+                -webkit-transform: translateY(0);
+            }
+        }
+
+        @keyframes spSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* loading dots */
+        .sp-dots {
+            margin-top: 44px;
+            display: -webkit-flex;
+            display: flex;
+            gap: 10px;
+            -webkit-animation: spSlideUp 0.5s ease both;
+            animation: spSlideUp 0.5s ease both;
+            -webkit-animation-delay: 1.3s;
+            animation-delay: 1.3s;
+            opacity: 0;
+        }
+
+        .sp-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            -webkit-animation: spBounce 1.2s ease-in-out infinite;
+            animation: spBounce 1.2s ease-in-out infinite;
+        }
+
+        .sp-dot2 {
+            -webkit-animation-delay: 0.2s;
+            animation-delay: 0.2s;
+        }
+
+        .sp-dot3 {
+            -webkit-animation-delay: 0.4s;
+            animation-delay: 0.4s;
+        }
+
+        @-webkit-keyframes spBounce {
+
+            0%,
+            100% {
+                -webkit-transform: translateY(0);
+                background: rgba(255, 255, 255, 0.4);
+            }
+
+            50% {
+                -webkit-transform: translateY(-10px);
+                background: rgba(255, 255, 255, 0.95);
+            }
+        }
+
+        @keyframes spBounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+                background: rgba(255, 255, 255, 0.4);
+            }
+
+            50% {
+                transform: translateY(-10px);
+                background: rgba(255, 255, 255, 0.95);
             }
         }
     </style>
+    <!-- ===== END SPLASH ===== -->
+
     <div class="container">
 
         <div id="home" class="screen"></div>
