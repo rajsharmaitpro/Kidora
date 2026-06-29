@@ -932,6 +932,11 @@ body {
 
 /* ========== Game Screen Wallpapers ========== */
 
+/* When banner ad is showing, add padding at bottom so options aren't hidden */
+#game.banner-visible {
+    padding-bottom: 70px !important;
+}
+
 /* English — soft blue notebook ruled lines */
 #game.theme-eng {
     border-radius: 24px;

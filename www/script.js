@@ -4,6 +4,7 @@ const ADMOB_CONFIG = {
     bannerId: "ca-app-pub-8245672543832838/5304894616",
     interstitialId: "ca-app-pub-8245672543832838/4339297300",
     rewardedId: "ca-app-pub-8245672543832838/3764582239",
+
     // ---- SET TO false BEFORE PUBLISHING TO PLAY STORE ----
     testMode: true
 };
@@ -100,19 +101,9 @@ async function preloadRewarded() {
         const { AdMob } = window.Capacitor.Plugins;
         await AdMob.prepareRewardVideoAd({ adId: adId("rewardedId") });
         rewardedAdAvailable = true;
-
-        AdMob.addListener("onRewardedVideoAdRewarded", () => {
-            // User watched full ad — give them the revive
-            reviveGame();
-        });
-        AdMob.addListener("rewardedVideoAdDismissed", () => {
-            rewardedAdAvailable = false;
-            setTimeout(preloadRewarded, 1000); // pre-load next
-        });
-        AdMob.addListener("rewardedVideoAdFailedToLoad", () => {
-            rewardedAdAvailable = false;
-        });
+        console.log("Rewarded ad loaded ✓");
     } catch (e) {
+        rewardedAdAvailable = false;
         console.log("Rewarded preload error:", e);
     }
 }
@@ -128,6 +119,8 @@ async function showBannerAd() {
             position: "BOTTOM_CENTER",
             margin: 0
         });
+        // Add padding so options aren't hidden behind banner
+        document.getElementById("game").classList.add("banner-visible");
     } catch (e) {
         console.log("Banner error:", e);
     }
@@ -139,6 +132,7 @@ async function hideBannerAd() {
     try {
         const { AdMob } = window.Capacitor.Plugins;
         await AdMob.hideBanner();
+        document.getElementById("game").classList.remove("banner-visible");
     } catch (e) { }
 }
 
@@ -160,13 +154,12 @@ async function maybeShowInterstitial() {
 
 // Show rewarded ad (Lightning Mode revive — ONE per session)
 async function showRewardedAd() {
-    // Only one revive allowed per Lightning Mode session
     if (hasUsedRevive) {
         speak("No more revives this round! Try again!");
         return;
     }
 
-    // Web/browser — no ads available, just revive free
+    // Web/browser — no ads, just revive free
     if (!IS_NATIVE || !adInitialized || !rewardedAdAvailable) {
         hasUsedRevive = true;
         reviveGame();
@@ -175,12 +168,25 @@ async function showRewardedAd() {
 
     try {
         const { AdMob } = window.Capacitor.Plugins;
-        hasUsedRevive = true; // mark used before showing (prevents double tap)
-        await AdMob.showRewardVideoAd();
-        // Actual revive triggered by onRewardedVideoAdRewarded listener
+        hasUsedRevive = true;
+
+        // showRewardVideoAd() resolves with reward item when user
+        // completes the full ad — this is the correct await pattern
+        const rewardItem = await AdMob.showRewardVideoAd();
+        console.log("Reward granted:", rewardItem);
+
+        // User completed the ad — revive!
+        reviveGame();
+
+        // Preload next rewarded ad
+        setTimeout(preloadRewarded, 1000);
+
     } catch (e) {
-        console.log("Rewarded show error:", e);
-        reviveGame(); // fallback on error
+        // User closed ad early without completing — no revive
+        console.log("Rewarded ad dismissed early:", e);
+        hasUsedRevive = false; // give them another chance to watch
+        rewardedAdAvailable = false;
+        setTimeout(preloadRewarded, 1000);
     }
 }
 
@@ -640,7 +646,7 @@ function _launchGame(type, theme) {
     document.getElementById("level").innerText = 1;
 
     const gameEl = document.getElementById("game");
-    gameEl.classList.remove("theme-eng", "theme-hin", "theme-mat", "theme-evs", "theme-act");
+    gameEl.classList.remove("theme-eng", "theme-hin", "theme-mat", "theme-evs", "theme-act", "banner-visible");
     gameEl.classList.add(theme);
     currentTheme = theme;
 
@@ -1231,7 +1237,7 @@ function startActivity(type) {
 
     window._lastGameType = type;
     const gameEl = document.getElementById("game");
-    gameEl.classList.remove("theme-eng", "theme-hin", "theme-mat", "theme-evs", "theme-act");
+    gameEl.classList.remove("theme-eng", "theme-hin", "theme-mat", "theme-evs", "theme-act", "banner-visible");
     gameEl.classList.add("theme-act");
     currentTheme = "theme-act";
 
@@ -1824,7 +1830,7 @@ function goBackToCategory() {
     suddenDeathStreak = 0; currentTheme = "";
     activitySet = []; activityIndex = 0; activityScore = 0;
 
-    document.getElementById("game").classList.remove("theme-eng", "theme-hin", "theme-mat", "theme-evs", "theme-act");
+    document.getElementById("game").classList.remove("theme-eng", "theme-hin", "theme-mat", "theme-evs", "theme-act", "banner-visible");
     document.getElementById("visual").style.display = "";
     document.getElementById("visual").classList.remove("evs-visual");
     document.getElementById("options").className = "options";
@@ -1846,7 +1852,7 @@ function goHome() {
     suddenDeathStreak = 0; currentTheme = "";
     activitySet = []; activityIndex = 0; activityScore = 0;
 
-    document.getElementById("game").classList.remove("theme-eng", "theme-hin", "theme-mat", "theme-evs", "theme-act");
+    document.getElementById("game").classList.remove("theme-eng", "theme-hin", "theme-mat", "theme-evs", "theme-act", "banner-visible");
     document.getElementById("visual").style.display = "";
     document.getElementById("visual").classList.remove("evs-visual");
     document.getElementById("options").className = "options";
@@ -1863,7 +1869,7 @@ function initApp() {
 
     const splash = document.getElementById("splash-overlay");
     if (splash) {
-        // Wait 2.8s so all animations play, then fade out over 0.6s
+        // Wait 4.5s so all animations play, then fade out over 0.5s
         setTimeout(function () {
             splash.style.opacity = "0";
             setTimeout(function () {
